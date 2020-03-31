@@ -3,7 +3,6 @@ package config
 import (
 	"fmt"
 	"github.com/spf13/viper"
-	"log"
 )
 
 func SetupViper() {
@@ -15,6 +14,4 @@ func SetupViper() {
 	if err != nil {
 		panic(fmt.Errorf("Fatal error config file: %s \n", err))
 	}
-	log.Print("CURRENT-ENV: ")
-	log.Print(viper.GetString("env"))
 }
