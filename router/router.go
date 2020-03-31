@@ -3,15 +3,15 @@ package router
 import (
 	"net/http"
 
-	customMiddleware "./middleware"
+	customMiddleware "github.com/AlexKLWS/lws-blog-server/router/middleware"
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
 )
 
 type Router struct {
-	server *echo.Echo
-	auth *echo.Group
-	articles *echo.Group
+	Server *echo.Echo
+	Auth *echo.Group
+	Articles *echo.Group
 }
 
 // New echo router
@@ -38,8 +38,8 @@ func New() *Router {
 	api	:= e.Group("/api")
 
 	return &Router{
-		server:   e,
-		auth:     api.Group("/auth"),
-		articles: api.Group("/articles"),
+		Server:   e,
+		Auth:     api.Group("/auth"),
+		Articles: api.Group("/articles"),
 	}
 }
