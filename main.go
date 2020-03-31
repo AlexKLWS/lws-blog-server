@@ -1,11 +1,14 @@
 package main
 
 import (
+	"github.com/AlexKLWS/lws-blog-server/config"
 	"github.com/AlexKLWS/lws-blog-server/handler"
 	"github.com/AlexKLWS/lws-blog-server/router"
 )
 
 func main() {
+	config.SetupViper()
+
 	r := router.New()
 	handler.RegisterHandlers(r)
 

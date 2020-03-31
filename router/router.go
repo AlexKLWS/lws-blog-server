@@ -1,6 +1,8 @@
 package router
 
 import (
+	"github.com/AlexKLWS/lws-blog-server/config"
+	"github.com/spf13/viper"
 	"net/http"
 
 	customMiddleware "github.com/AlexKLWS/lws-blog-server/router/middleware"
@@ -9,8 +11,8 @@ import (
 )
 
 type Router struct {
-	Server *echo.Echo
-	Auth *echo.Group
+	Server   *echo.Echo
+	Auth     *echo.Group
 	Articles *echo.Group
 }
 
@@ -24,10 +26,14 @@ func New() *Router {
 		Browse: false,
 	}))
 	e.Use(middleware.Recover())
-	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
-		AllowOrigins: []string{"http://localhost:3000"},
-		AllowMethods: []string{http.MethodGet, http.MethodPut, http.MethodPost, http.MethodDelete},
-	}))
+
+	if viper.GetString(config.Env) == config.Debug {
+		e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
+			AllowOrigins: []string{"http://localhost:3000"},
+			AllowMethods: []string{http.MethodGet, http.MethodPut, http.MethodPost, http.MethodDelete},
+		}))
+	}
+
 	// Serving the website
 	e.Static("/", "../client/build")
 
@@ -35,7 +41,7 @@ func New() *Router {
 	// It could only be accessed via history/router
 	e.Group("/secret", customMiddleware.CookieCheck)
 
-	api	:= e.Group("/api")
+	api := e.Group("/api")
 
 	return &Router{
 		Server:   e,
