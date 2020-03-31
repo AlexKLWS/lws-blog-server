@@ -12,10 +12,9 @@ func NewArticle(c echo.Context) error {
 	articleData := models.ArticleData{}
 
 	defer c.Request().Body.Close()
-
 	err := json.NewDecoder(c.Request().Body).Decode(&articleData)
 	if err != nil {
-		log.Printf("Failed processing login request: %s\n", err)
+		log.Printf("Failed processing article submit request: %s\n", err)
 		return echo.NewHTTPError(http.StatusInternalServerError)
 	}
 
