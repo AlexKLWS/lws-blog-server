@@ -2,6 +2,7 @@ package handler
 
 import (
 	"encoding/json"
+	"github.com/AlexKLWS/lws-blog-server/auth"
 	"github.com/AlexKLWS/lws-blog-server/models"
 	"github.com/labstack/echo"
 	"log"
@@ -19,17 +20,11 @@ func Login(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError)
 	}
 
-	// newSessionToken := uuid.Must(uuid.NewV4())
-
-	// s := &Session{
-	// 	Token: newSessionToken.String(),
-	// }
-
 	var s *models.Session = nil
 
 	if loginData.Password == "abcd" {
 		s = &models.Session{
-			Token: "lol",
+			Token: auth.NewToken(),
 		}
 	}
 
