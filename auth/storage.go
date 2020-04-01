@@ -53,8 +53,16 @@ func AddTokenToStorage(token string) {
 		expirationTime := now.Add(24 * time.Hour)
 		go expirationJob([]byte(token), now, expirationTime)
 		mutex.Lock()
+		if activeTokens == nil {
+			activeTokens = make(map[string]time.Time)
+		}
 		activeTokens[token] = expirationTime
 		mutex.Unlock()
+		if tokenDB == nil {
+			log.Printf("Token %s could not be persisted cause token db is unavailable!", token)
+			return
+		}
+		tokenDB.Put([]byte(token), []byte(expirationTime.Format(time.StampMilli)))
 	}()
 }
 
