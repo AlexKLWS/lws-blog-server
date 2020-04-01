@@ -2,7 +2,9 @@ package auth
 
 import (
 	"fmt"
+	"github.com/AlexKLWS/lws-blog-server/config"
 	"github.com/prologic/bitcask"
+	"github.com/spf13/viper"
 	"log"
 	"sync"
 	"time"
@@ -14,8 +16,10 @@ var (
 	mutex        sync.Mutex
 )
 
+var tokenLifetime = time.Duration(viper.GetInt(config.TokenLifetime)) * time.Hour
+
 func InitializeTokenStorage() {
-	db, dbOpenError := bitcask.Open("/tmp/db")
+	db, dbOpenError := bitcask.Open("./token_DB")
 	if dbOpenError != nil || db == nil {
 		panic(fmt.Errorf("Could not load persisted tokens db: %s \n", dbOpenError))
 	}
@@ -23,7 +27,6 @@ func InitializeTokenStorage() {
 	values := tokenDB.Keys()
 
 	now := time.Now()
-	threshold := now.Add(-24 * time.Hour)
 	for v := range values {
 		t, err := tokenDB.Get(v)
 		if err != nil {
@@ -33,7 +36,7 @@ func InitializeTokenStorage() {
 		if timeErr != nil {
 			continue
 		}
-		if parsedTime.Before(threshold) {
+		if parsedTime.Before(now) {
 			tokenDB.Delete(v)
 		} else {
 			go func() {
@@ -50,7 +53,7 @@ func InitializeTokenStorage() {
 func AddTokenToStorage(token string) {
 	go func() {
 		now := time.Now()
-		expirationTime := now.Add(24 * time.Hour)
+		expirationTime := now.Add(tokenLifetime)
 		go expirationJob([]byte(token), now, expirationTime)
 		mutex.Lock()
 		if activeTokens == nil {
