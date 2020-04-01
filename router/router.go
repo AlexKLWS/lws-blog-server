@@ -41,11 +41,11 @@ func New() *Router {
 	// It could only be accessed via history/router
 	e.Group("/secret", customMiddleware.CookieCheck)
 
-	api := e.Group("/api")
+	a := e.Group("/api")
 
 	return &Router{
 		Server:   e,
-		Auth:     api.Group("/auth"),
-		Articles: api.Group("/articles"),
+		Auth:     a.Group("/auth"),
+		Articles: a.Group("/articles"),
 	}
 }
