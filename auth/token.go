@@ -6,7 +6,7 @@ func NewToken() string {
 	uuidToken := uuid.Must(uuid.NewV4())
 	t := uuidToken.String()
 
-	AddTokenToStorage(t)
+	go AddTokenToStorage(t)
 
 	return t
 }
