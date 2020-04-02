@@ -5,7 +5,7 @@ import (
 	"github.com/spf13/viper"
 )
 
-func SetupViper() {
+func InitializeViper() {
 	viper.AutomaticEnv()
 
 	viper.SetConfigName("config")
