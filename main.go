@@ -10,7 +10,7 @@ import (
 
 func main() {
 	config.InitializeViper()
-	auth.InitializeTokenStorage()
+	go auth.InitializeTokenStorage()
 
 	r := router.New()
 	handler.RegisterHandlers(r)
