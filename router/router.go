@@ -14,6 +14,8 @@ type Router struct {
 	Server   *echo.Echo
 	Auth     *echo.Group
 	Articles *echo.Group
+	Pages    *echo.Group
+	Files    *echo.Group
 }
 
 // New echo router
@@ -29,6 +31,7 @@ func New() *Router {
 
 	if viper.GetString(config.Env) == config.Debug {
 		e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
+			AllowCredentials: true,
 			AllowOrigins: []string{"http://localhost:3000"},
 			AllowMethods: []string{http.MethodGet, http.MethodPut, http.MethodPost, http.MethodDelete},
 		}))
@@ -41,11 +44,13 @@ func New() *Router {
 	// It could only be accessed via history/router
 	e.Group("/secret", customMiddleware.CookieCheck)
 
-	a := e.Group("/api")
+	a := e.Group("/api", customMiddleware.CookieCheck)
 
 	return &Router{
 		Server:   e,
-		Auth:     a.Group("/auth"),
+		Auth:     e.Group("/auth"),
 		Articles: a.Group("/articles"),
+		Pages:    a.Group("/pages"),
+		Files:    a.Group("/files"),
 	}
 }
