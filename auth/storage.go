@@ -14,9 +14,8 @@ var (
 	activeTokens map[string]time.Time
 	tokenDB      *bitcask.Bitcask
 	mutex        sync.Mutex
+	tokenLifetime time.Duration
 )
-
-var tokenLifetime = time.Duration(viper.GetInt(config.TokenLifetime)) * time.Hour
 
 func InitializeTokenStorage() {
 	db, dbOpenError := bitcask.Open("./token_DB")
@@ -25,6 +24,9 @@ func InitializeTokenStorage() {
 	}
 	tokenDB = db
 	values := tokenDB.Keys()
+	activeTokens = make(map[string]time.Time)
+
+	tokenLifetime = time.Duration(viper.GetInt(config.TokenLifetime)) * time.Hour
 
 	now := time.Now()
 	for v := range values {
@@ -32,7 +34,7 @@ func InitializeTokenStorage() {
 		if err != nil {
 			continue
 		}
-		parsedTime, timeErr := time.Parse(time.StampMilli, string(t))
+		parsedTime, timeErr := time.Parse(time.RFC3339, string(t))
 		if timeErr != nil {
 			continue
 		}
@@ -54,16 +56,16 @@ func AddTokenToStorage(token string) {
 	expirationTime := now.Add(tokenLifetime)
 	go expirationJob([]byte(token), now, expirationTime)
 	mutex.Lock()
-	if activeTokens == nil {
-		activeTokens = make(map[string]time.Time)
-	}
 	activeTokens[token] = expirationTime
 	mutex.Unlock()
 	if tokenDB == nil {
 		log.Printf("Token %s could not be persisted cause token db is unavailable!", token)
 		return
 	}
-	tokenDB.Put([]byte(token), []byte(expirationTime.Format(time.StampMilli)))
+	err := tokenDB.Put([]byte(token), []byte(expirationTime.Format(time.RFC3339)))
+	if err != nil {
+		log.Printf("Could not save the token %s! Error: %d", token, err)
+	}
 }
 
 func TokenExistsInStorage(token string) bool {
@@ -83,7 +85,6 @@ func expirationJob(key []byte, now time.Time, expirationTimestamp time.Time) {
 		err := tokenDB.Delete(key)
 		if err != nil {
 			log.Printf("Could not delete key %s! Error: %d", string(key), err)
-			return
 		}
 	}
 
