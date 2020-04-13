@@ -21,3 +21,6 @@ config.yaml
 
 # Token DB
 token_DB/
+
+# Assets
+assets
