@@ -3,8 +3,10 @@ package handler
 import (
 	"encoding/json"
 	"github.com/AlexKLWS/lws-blog-server/auth"
+	"github.com/AlexKLWS/lws-blog-server/config"
 	"github.com/AlexKLWS/lws-blog-server/models"
 	"github.com/labstack/echo"
+	"github.com/spf13/viper"
 	"log"
 	"net/http"
 )
@@ -22,9 +24,13 @@ func Login(c echo.Context) error {
 
 	var s *models.Session = nil
 
-	if loginData.Password == "abcd" {
-		s = &models.Session{
-			Token: auth.NewToken(),
+	allowedPasswords := viper.GetStringSlice(config.AllowedPasswords)
+
+	for _, p := range allowedPasswords{
+		if p == loginData.Password {
+			s = &models.Session{
+				Token: auth.NewToken(),
+			}
 		}
 	}
 
