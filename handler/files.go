@@ -3,7 +3,6 @@ package handler
 import (
 	"encoding/json"
 	"github.com/AlexKLWS/lws-blog-server/models"
-	"github.com/davecgh/go-spew/spew"
 	"github.com/labstack/echo"
 	"io"
 	"log"
@@ -19,7 +18,7 @@ var (
 	fileMetaData []models.FileMetaData
 )
 
-func NewFileMetaData(c echo.Context) error {
+func AddNewFileMetaData(c echo.Context) error {
 	data := models.UploadMetaDataBody{}
 
 	defer c.Request().Body.Close()
@@ -31,15 +30,12 @@ func NewFileMetaData(c echo.Context) error {
 
 	mutex.Lock()
 	fileMetaData = append(fileMetaData, data.MetaData...)
-	log.Print("NEW-METADATAS")
-	spew.Dump(data)
-	spew.Dump(fileMetaData)
 	mutex.Unlock()
 
 	return c.String(http.StatusOK, "OK")
 }
 
-func NewFiles(c echo.Context) error {
+func AddNewFiles(c echo.Context) error {
 	referenceId := c.FormValue("referenceId")
 	log.Printf("Uploading file with REFERENCE-ID: %s\n", referenceId)
 	metaData, done := getMetaData(referenceId)
@@ -82,6 +78,7 @@ func getMetaData(referenceId string) (models.FileMetaData, bool) {
 	dataIndex := -1
 	mutex.Lock()
 	defer mutex.Unlock()
+	// Potential bottleneck, need to look into splitting the slice and searching different parts in parallel
 	for i := range fileMetaData {
 		if fileMetaData[i].Id == referenceId {
 			dataIndex = i
@@ -124,7 +121,7 @@ func getFileURL(metaData models.FileMetaData, fileName string) string {
 }
 
 func createFolderIfDoesntExist(folder string) {
-	path := filepath.Join(".", "assets", folder)
+	path := filepath.Join("..", "assets", folder)
 	if _, err := os.Stat(path); os.IsNotExist(err) {
 		os.Mkdir(path, os.ModePerm)
 	}

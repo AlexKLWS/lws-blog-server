@@ -37,6 +37,8 @@ func New() *Router {
 		}))
 	}
 
+	// Serving the assets
+	e.Static("/assets", "../assets")
 	// Serving the website
 	e.Static("/", "../client/build")
 
