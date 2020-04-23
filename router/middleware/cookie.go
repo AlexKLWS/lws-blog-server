@@ -11,7 +11,7 @@ func CookieCheck(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		cookie, err := c.Cookie("token")
 		if err != nil {
-			log.Printf("NO COOKIE HERE!")
+			log.Printf("Error extracting cookie: %s\n", err)
 			return echo.NewHTTPError(http.StatusInternalServerError)
 		}
 		if !auth.TokenExistsInStorage(cookie.Value) {
