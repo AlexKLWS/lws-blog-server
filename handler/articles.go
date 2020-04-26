@@ -2,6 +2,7 @@ package handler
 
 import (
 	"encoding/json"
+	"github.com/AlexKLWS/lws-blog-server/articles"
 	"github.com/AlexKLWS/lws-blog-server/models"
 	"github.com/labstack/echo"
 	"log"
@@ -17,6 +18,8 @@ func NewArticle(c echo.Context) error {
 		log.Printf("Failed processing article submit request: %s\n", err)
 		return echo.NewHTTPError(http.StatusInternalServerError)
 	}
+
+	go articles.Create(&articleData)
 
 	return c.String(http.StatusOK, "OK")
 }
