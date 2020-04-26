@@ -7,4 +7,3 @@ type PageData struct {
 	MaterialData
 	PageURL string `json:"pageURL" xml:"pageURL"`
 }
-
