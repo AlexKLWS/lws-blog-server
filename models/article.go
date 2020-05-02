@@ -11,10 +11,10 @@ type ArticleData struct {
 	ArticleText string `json:"articleText" xml:"articleText"`
 }
 
-func (ad ArticleData) getID() uint {
+func (ad ArticleData) GetID() uint {
 	return ad.ID
 }
 
-func (ad ArticleData) getCreatedAt() time.Time {
+func (ad ArticleData) GetCreatedAt() time.Time {
 	return ad.CreatedAt
 }
