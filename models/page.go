@@ -1,12 +1,11 @@
 package models
 
 import (
-	"github.com/jinzhu/gorm"
 	"time"
 )
 
 type PageData struct {
-	gorm.Model
+	Model
 	MaterialData
 	PageURL string `json:"pageURL" xml:"pageURL"`
 }

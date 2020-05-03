@@ -1,12 +1,11 @@
 package models
 
 import (
-	"github.com/jinzhu/gorm"
 	"time"
 )
 
 type ArticleData struct {
-	gorm.Model
+	Model
 	MaterialData
 	ArticleText string `json:"articleText" xml:"articleText"`
 }
