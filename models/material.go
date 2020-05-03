@@ -5,5 +5,5 @@ type MaterialData struct {
 	Subtitle  string   `json:"subtitle" xml:"subtitle"`
 	Category  Category `json:"category" xml:"category"`
 	Icon      IconData `json:"icon" xml:"icon" gorm:"foreignkey:IconRefer"`
-	IconRefer uint
+	IconRefer uint     `json:"-"`
 }
