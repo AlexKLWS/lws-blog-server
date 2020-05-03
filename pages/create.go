@@ -21,5 +21,5 @@ func Create(page *models.PageData) {
 	db.AutoMigrate(&models.PageData{})
 
 	// Create
-	db.Create(page)
+	db.Table(config.PagesTableName).Create(page)
 }

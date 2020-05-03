@@ -22,5 +22,5 @@ func Create(article *models.ArticleData) {
 	db.AutoMigrate(&models.ArticleData{})
 
 	// Create
-	db.Create(article)
+	db.Table(config.ArticleTableName).Create(article)
 }
