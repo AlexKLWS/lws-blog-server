@@ -5,6 +5,7 @@ import (
 	"github.com/AlexKLWS/lws-blog-server/models"
 	"github.com/AlexKLWS/lws-blog-server/pages"
 	"github.com/labstack/echo"
+	uuid "github.com/satori/go.uuid"
 	"log"
 	"net/http"
 )
@@ -19,6 +20,8 @@ func NewPage(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError)
 	}
 
+	u := uuid.Must(uuid.NewV4())
+	pageData.ReferenceId = u.String()
 	go pages.Create(&pageData)
 
 	return c.String(http.StatusOK, "OK")
