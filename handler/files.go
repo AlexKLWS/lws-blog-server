@@ -2,6 +2,7 @@ package handler
 
 import (
 	"encoding/json"
+	"github.com/satori/go.uuid"
 	"github.com/AlexKLWS/lws-blog-server/models"
 	"github.com/labstack/echo"
 	"io"
@@ -29,10 +30,14 @@ func AddNewFileMetaData(c echo.Context) error {
 	}
 
 	mutex.Lock()
+	for i := range data.MetaData  {
+		u := uuid.Must(uuid.NewV4())
+		data.MetaData[i].ReferenceId = u.String()
+	}
 	fileMetaData = append(fileMetaData, data.MetaData...)
 	mutex.Unlock()
 
-	return c.String(http.StatusOK, "OK")
+	return c.JSON(http.StatusOK, data)
 }
 
 func AddNewFiles(c echo.Context) error {
@@ -80,7 +85,7 @@ func getMetaData(referenceId string) (models.FileMetaData, bool) {
 	defer mutex.Unlock()
 	// Potential bottleneck, need to look into splitting the slice and searching different parts in parallel
 	for i := range fileMetaData {
-		if fileMetaData[i].Id == referenceId {
+		if fileMetaData[i].ReferenceId == referenceId {
 			dataIndex = i
 			break
 		}
@@ -121,7 +126,11 @@ func getFileURL(metaData models.FileMetaData, fileName string) string {
 }
 
 func createFolderIfDoesntExist(folder string) {
-	path := filepath.Join("..", "assets", folder)
+	path := filepath.Join(".", "assets")
+	if _, err := os.Stat(path); os.IsNotExist(err) {
+		os.Mkdir(path, os.ModePerm)
+	}
+	path = filepath.Join(path, folder)
 	if _, err := os.Stat(path); os.IsNotExist(err) {
 		os.Mkdir(path, os.ModePerm)
 	}
