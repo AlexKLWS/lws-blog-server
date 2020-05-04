@@ -2,9 +2,9 @@ package handler
 
 import (
 	"encoding/json"
-	"github.com/satori/go.uuid"
 	"github.com/AlexKLWS/lws-blog-server/models"
 	"github.com/labstack/echo"
+	"github.com/satori/go.uuid"
 	"io"
 	"log"
 	"net/http"
@@ -30,7 +30,7 @@ func AddNewFileMetaData(c echo.Context) error {
 	}
 
 	mutex.Lock()
-	for i := range data.MetaData  {
+	for i := range data.MetaData {
 		u := uuid.Must(uuid.NewV4())
 		data.MetaData[i].ReferenceId = u.String()
 	}
