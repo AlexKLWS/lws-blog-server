@@ -8,3 +8,14 @@ type MaterialData struct {
 	ReferenceId string   `json:"referenceId" xml:"referenceId" gorm:"unique;not null"`
 	IconRefer   uint     `json:"-"`
 }
+
+func CreateMaterialDataFromJoinedRecord(r JoinedArticlePage) MaterialData {
+	return MaterialData{
+		Name:     r.Name,
+		Subtitle: r.Subtitle,
+		Category: r.Category,
+		Icon: CreateIconDataFromJoinedRecord(r),
+		ReferenceId: r.ReferenceId,
+		IconRefer:   0,
+	}
+}
