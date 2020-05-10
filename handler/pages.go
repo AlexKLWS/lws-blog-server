@@ -26,8 +26,3 @@ func NewPage(c echo.Context) error {
 
 	return c.String(http.StatusOK, "OK")
 }
-
-func GetPages(c echo.Context) error {
-	p := pages.Get()
-	return c.JSON(http.StatusOK, p)
-}
