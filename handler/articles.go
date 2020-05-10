@@ -27,8 +27,8 @@ func NewArticle(c echo.Context) error {
 	return c.String(http.StatusOK, "OK")
 }
 
-func GetArticles(c echo.Context) error {
-	go articles.Get()
+func GetArticle(c echo.Context) error {
+	go articles.Get("")
 
 	return c.String(http.StatusOK, "OK")
 }

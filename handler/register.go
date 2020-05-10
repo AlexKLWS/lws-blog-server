@@ -6,10 +6,9 @@ func RegisterHandlers(serverRouter *router.Router) {
 	serverRouter.Auth.POST("/login", Login)
 
 	serverRouter.Articles.PUT("", NewArticle)
-	serverRouter.Articles.GET("", GetArticles)
+	serverRouter.Articles.GET("", GetArticle)
 
 	serverRouter.Pages.PUT("", NewPage)
-	serverRouter.Pages.GET("", GetPages)
 
 	serverRouter.Materials.GET("", GetMaterials)
 
