@@ -28,7 +28,16 @@ func NewArticle(c echo.Context) error {
 }
 
 func GetArticle(c echo.Context) error {
-	go articles.Get("")
+	data := struct{ ReferenceId string }{}
 
-	return c.String(http.StatusOK, "OK")
+	defer c.Request().Body.Close()
+	err := json.NewDecoder(c.Request().Body).Decode(&data)
+	if err != nil {
+		log.Printf("Failed processing article request: %s\n", err)
+		return echo.NewHTTPError(http.StatusInternalServerError)
+	}
+
+	article := articles.Get(data.ReferenceId)
+
+	return c.JSON(http.StatusOK, article)
 }
