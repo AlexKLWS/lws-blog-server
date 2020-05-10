@@ -24,6 +24,6 @@ func CreatePageDataFromJoinedRecord(r JoinedArticlePage) PageData {
 			CreatedAt: r.CreatedAt,
 		},
 		MaterialData: CreateMaterialDataFromJoinedRecord(r),
-		PageURL: r.PageURL,
+		PageURL:      r.PageURL,
 	}
 }
