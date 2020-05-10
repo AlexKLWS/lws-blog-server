@@ -1,16 +1,16 @@
 package materials
 
 import (
+	"fmt"
 	"github.com/AlexKLWS/lws-blog-server/config"
 	"github.com/AlexKLWS/lws-blog-server/models"
-	"github.com/davecgh/go-spew/spew"
 	"github.com/jinzhu/gorm"
 	"github.com/spf13/viper"
 	"log"
 	"time"
 )
 
-func GetFromDate(date time.Time)  {
+func GetFromDate(date time.Time) []models.MaterialRecord {
 	db, err := gorm.Open(viper.GetString(config.GormDialect), viper.GetString(config.GormConnectionString))
 	if err != nil {
 		log.Printf("DB open error: %s\n", err)
@@ -18,10 +18,29 @@ func GetFromDate(date time.Time)  {
 	}
 	defer db.Close()
 
-	var articles []models.ArticleData
+	var materials []models.MaterialRecord
+	var intermediateData []models.JoinedArticlePage
+	db.Table(config.PagesTableName).
+		Where("created_at > ?", date).
+		Select("*").
+		Joins(fmt.Sprintf("JOIN %s ON %s.icon_refer = %s.id", config.IconTableName, config.PagesTableName, config.IconTableName)).
+		Find(&intermediateData)
+	for i := range intermediateData {
+		page := models.CreatePageDataFromJoinedRecord(intermediateData[i])
+		materials = append(materials, page)
+	}
 
-	db.Where("created_at > ?", date).Order("created_at").Limit(20).Find(&articles)
-	spew.Dump(articles)
+	db.Table(config.ArticleTableName).
+		Where("created_at > ?", date).
+		Select("*").
+		Joins(fmt.Sprintf("JOIN %s ON %s.icon_refer = %s.id", config.IconTableName, config.ArticleTableName, config.IconTableName)).
+		Find(&intermediateData)
+	for i := range intermediateData {
+		article := models.CreateArticleDataFromJoinedRecord(intermediateData[i])
+		materials = append(materials, article)
+	}
+
+	return materials
 }
 
 func Get() []models.MaterialRecord {
@@ -33,15 +52,23 @@ func Get() []models.MaterialRecord {
 	defer db.Close()
 
 	var materials []models.MaterialRecord
-	var pages []models.PageData
-	db.Order("created_at DESC").Limit(20).Find(&pages)
-	for i := 0; i < len(pages); i++ {
-		materials = append(materials, pages[i])
+	var intermediateData []models.JoinedArticlePage
+	db.Table(config.PagesTableName).
+		Select("*").
+		Joins(fmt.Sprintf("JOIN %s ON %s.icon_refer = %s.id", config.IconTableName, config.PagesTableName, config.IconTableName)).
+		Find(&intermediateData)
+	for i := range intermediateData {
+		page := models.CreatePageDataFromJoinedRecord(intermediateData[i])
+		materials = append(materials, page)
 	}
-	var articles []models.ArticleData
-	db.Order("created_at DESC").Limit(20).Find(&articles)
-	for i := 0; i < len(articles); i++ {
-		materials = append(materials, articles[i])
+
+	db.Table(config.ArticleTableName).
+		Select("*").
+		Joins(fmt.Sprintf("JOIN %s ON %s.icon_refer = %s.id", config.IconTableName, config.ArticleTableName, config.IconTableName)).
+		Find(&intermediateData)
+	for i := range intermediateData {
+		article := models.CreateArticleDataFromJoinedRecord(intermediateData[i])
+		materials = append(materials, article)
 	}
 
 	return materials
