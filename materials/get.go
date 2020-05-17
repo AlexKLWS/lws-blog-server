@@ -22,7 +22,7 @@ func GetFromDate(date time.Time) []models.MaterialRecord {
 	var materials []models.MaterialRecord
 	var intermediateData []models.JoinedArticlePage
 	db.Table(config.PagesTableName).
-		Where("created_at > ?", date).
+		Where(fmt.Sprintf("%s.created_at < ?", config.PagesTableName), date).
 		Select("*").
 		Joins(fmt.Sprintf("JOIN %s ON %s.icon_refer = %s.id", config.IconTableName, config.PagesTableName, config.IconTableName)).
 		Find(&intermediateData)
@@ -32,7 +32,7 @@ func GetFromDate(date time.Time) []models.MaterialRecord {
 	}
 
 	db.Table(config.ArticleTableName).
-		Where("created_at > ?", date).
+		Where(fmt.Sprintf("%s.created_at < ?", config.ArticleTableName), date).
 		Select("*").
 		Joins(fmt.Sprintf("JOIN %s ON %s.icon_refer = %s.id", config.IconTableName, config.ArticleTableName, config.IconTableName)).
 		Find(&intermediateData)
@@ -55,7 +55,7 @@ func GetFromDateForCategory(date time.Time, category models.Category) []models.M
 	var materials []models.MaterialRecord
 	var intermediateData []models.JoinedArticlePage
 	db.Table(config.PagesTableName).
-		Where("created_at > ? AND category = ?", date, category).
+		Where(fmt.Sprintf("%s.created_at < ? AND %s.category = ?", config.PagesTableName, config.PagesTableName), date, category).
 		Select("*").
 		Joins(fmt.Sprintf("JOIN %s ON %s.icon_refer = %s.id", config.IconTableName, config.PagesTableName, config.IconTableName)).
 		Find(&intermediateData)
@@ -65,7 +65,7 @@ func GetFromDateForCategory(date time.Time, category models.Category) []models.M
 	}
 
 	db.Table(config.ArticleTableName).
-		Where("created_at > ? AND category = ?", date, category).
+		Where(fmt.Sprintf("%s.created_at < ? AND %s.category = ?", config.ArticleTableName, config.ArticleTableName), date, category).
 		Select("*").
 		Joins(fmt.Sprintf("JOIN %s ON %s.icon_refer = %s.id", config.IconTableName, config.ArticleTableName, config.IconTableName)).
 		Find(&intermediateData)
@@ -119,7 +119,7 @@ func GetForCategory(category models.Category) []models.MaterialRecord {
 	var materials []models.MaterialRecord
 	var intermediateData []models.JoinedArticlePage
 	db.Table(config.PagesTableName).
-		Where("category = ?", category).
+		Where(fmt.Sprintf("%s.category = ?", config.PagesTableName), category).
 		Select("*").
 		Joins(fmt.Sprintf("JOIN %s ON %s.icon_refer = %s.id", config.IconTableName, config.PagesTableName, config.IconTableName)).
 		Find(&intermediateData)
@@ -129,7 +129,7 @@ func GetForCategory(category models.Category) []models.MaterialRecord {
 	}
 
 	db.Table(config.ArticleTableName).
-		Where("category = ?", category).
+		Where(fmt.Sprintf("%s.category = ?", config.ArticleTableName), category).
 		Select("*").
 		Joins(fmt.Sprintf("JOIN %s ON %s.icon_refer = %s.id", config.IconTableName, config.ArticleTableName, config.IconTableName)).
 		Find(&intermediateData)
