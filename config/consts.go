@@ -4,6 +4,9 @@ const Env = "env"
 const Debug = "debug"
 
 const TokenLifetime = "token-lifetime"
+
+const PageSize = "page-size"
+
 const Port = "port"
 
 const AllowedPasswords = "allowed-passwords"
