@@ -7,9 +7,11 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/AlexKLWS/lws-blog-server/config"
 	"github.com/AlexKLWS/lws-blog-server/materials"
 	"github.com/AlexKLWS/lws-blog-server/models"
 	"github.com/labstack/echo"
+	"github.com/spf13/viper"
 )
 
 func GetMaterials(c echo.Context) error {
@@ -46,8 +48,8 @@ func GetMaterials(c echo.Context) error {
 		return allMaterialRecords[i].GetCreatedAt().After(allMaterialRecords[j].GetCreatedAt())
 	})
 	var selectedMaterialRecords []models.MaterialRecord
-	if len(allMaterialRecords) > 16 {
-		selectedMaterialRecords = allMaterialRecords[:16]
+	if len(allMaterialRecords) > viper.GetInt(config.PageSize) {
+		selectedMaterialRecords = allMaterialRecords[:viper.GetInt(config.PageSize)]
 	} else {
 		selectedMaterialRecords = allMaterialRecords
 	}
