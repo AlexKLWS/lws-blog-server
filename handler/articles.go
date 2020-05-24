@@ -2,12 +2,14 @@ package handler
 
 import (
 	"encoding/json"
-	"github.com/AlexKLWS/lws-blog-server/articles"
-	"github.com/AlexKLWS/lws-blog-server/models"
-	"github.com/labstack/echo"
-	uuid "github.com/satori/go.uuid"
 	"log"
 	"net/http"
+
+	"github.com/AlexKLWS/lws-blog-server/articles"
+	"github.com/AlexKLWS/lws-blog-server/models"
+	"github.com/AlexKLWS/lws-blog-server/pageIndex"
+	"github.com/labstack/echo"
+	uuid "github.com/satori/go.uuid"
 )
 
 func NewArticle(c echo.Context) error {
@@ -22,7 +24,10 @@ func NewArticle(c echo.Context) error {
 
 	u := uuid.Must(uuid.NewV4())
 	articleData.ReferenceId = u.String()
-	go articles.Create(&articleData)
+	go func() {
+		articles.Create(&articleData)
+		pageIndex.Update()
+	}()
 
 	return c.String(http.StatusOK, "OK")
 }
