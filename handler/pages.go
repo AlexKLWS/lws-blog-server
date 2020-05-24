@@ -2,12 +2,14 @@ package handler
 
 import (
 	"encoding/json"
+	"log"
+	"net/http"
+
 	"github.com/AlexKLWS/lws-blog-server/models"
+	"github.com/AlexKLWS/lws-blog-server/pageIndex"
 	"github.com/AlexKLWS/lws-blog-server/pages"
 	"github.com/labstack/echo"
 	uuid "github.com/satori/go.uuid"
-	"log"
-	"net/http"
 )
 
 func NewPage(c echo.Context) error {
@@ -22,7 +24,10 @@ func NewPage(c echo.Context) error {
 
 	u := uuid.Must(uuid.NewV4())
 	pageData.ReferenceId = u.String()
-	go pages.Create(&pageData)
+	go func() {
+		pages.Create(&pageData)
+		pageIndex.Update()
+	}()
 
 	return c.String(http.StatusOK, "OK")
 }
