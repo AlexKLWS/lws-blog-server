@@ -9,3 +9,11 @@ type Model struct {
 	UpdatedAt time.Time  `json:"-"`
 	DeletedAt *time.Time `json:"-" sql:"index"`
 }
+
+func (m Model) GetID() uint {
+	return m.ID
+}
+
+func (m Model) GetCreatedAt() time.Time {
+	return m.CreatedAt
+}
