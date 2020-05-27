@@ -1,4 +1,4 @@
-package pageIndex
+package pageindex
 
 import (
 	"log"
@@ -10,7 +10,7 @@ import (
 	"github.com/spf13/viper"
 )
 
-func Update() {
+func Update(category models.Category) {
 	db, err := gorm.Open(viper.GetString(config.GormDialect), viper.GetString(config.GormConnectionString))
 	if err != nil {
 		log.Printf("DB open error: %s\n", err)
@@ -22,9 +22,16 @@ func Update() {
 
 	var materials []models.MaterialRecord
 	var intermediateData []models.Model
-	db.Table(config.PagesTableName).
-		Select("id, created_at").
-		Find(&intermediateData)
+	if category != models.Misc {
+		db.Table(config.PagesTableName).
+			Where("category = ?", category).
+			Select("id, created_at").
+			Find(&intermediateData)
+	} else {
+		db.Table(config.PagesTableName).
+			Select("id, created_at").
+			Find(&intermediateData)
+	}
 	for i := range intermediateData {
 		materials = append(materials, intermediateData[i])
 	}
@@ -43,7 +50,7 @@ func Update() {
 	pageSize := viper.GetInt(config.PageSize)
 	if len(materials) > pageSize {
 		p := 1
-		db.Where(models.PageIndex{Page: p}).Assign(models.PageIndex{EndDate: materials[pageSize-1].GetCreatedAt()}).FirstOrCreate(&models.PageIndex{})
+		db.Where(models.PageIndex{Page: p}).Assign(models.PageIndex{Category: category, EndDate: materials[pageSize-1].GetCreatedAt()}).FirstOrCreate(&models.PageIndex{})
 		for i := pageSize; i < len(materials); i = i + pageSize {
 			p++
 			var endDateItemIndex int
@@ -52,10 +59,10 @@ func Update() {
 			} else {
 				endDateItemIndex = len(materials) - 1
 			}
-			db.Where(models.PageIndex{Page: p}).Assign(models.PageIndex{StartDate: materials[i].GetCreatedAt(), EndDate: materials[endDateItemIndex].GetCreatedAt()}).FirstOrCreate(&models.PageIndex{})
+			db.Where(models.PageIndex{Page: p}).Assign(models.PageIndex{Category: category, StartDate: materials[i].GetCreatedAt(), EndDate: materials[endDateItemIndex].GetCreatedAt()}).FirstOrCreate(&models.PageIndex{})
 		}
 	} else {
 		i := len(materials) - 1
-		db.Where(models.PageIndex{Page: 1}).Assign(models.PageIndex{EndDate: materials[i].GetCreatedAt()}).FirstOrCreate(&models.PageIndex{})
+		db.Where(models.PageIndex{Page: 1}).Assign(models.PageIndex{Category: category, EndDate: materials[i].GetCreatedAt()}).FirstOrCreate(&models.PageIndex{})
 	}
 }
