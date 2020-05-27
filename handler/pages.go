@@ -6,7 +6,7 @@ import (
 	"net/http"
 
 	"github.com/AlexKLWS/lws-blog-server/models"
-	"github.com/AlexKLWS/lws-blog-server/pageIndex"
+	"github.com/AlexKLWS/lws-blog-server/pageindex"
 	"github.com/AlexKLWS/lws-blog-server/pages"
 	"github.com/labstack/echo"
 	uuid "github.com/satori/go.uuid"
@@ -26,7 +26,10 @@ func NewPage(c echo.Context) error {
 	pageData.ReferenceId = u.String()
 	go func() {
 		pages.Create(&pageData)
-		pageIndex.Update()
+		if pageData.Category != models.Misc {
+			pageindex.Update(models.Misc)
+		}
+		pageindex.Update(pageData.Category)
 	}()
 
 	return c.String(http.StatusOK, "OK")
