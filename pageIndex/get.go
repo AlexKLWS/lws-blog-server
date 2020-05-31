@@ -26,3 +26,20 @@ func Get(pageNumber int, category models.Category) models.PageIndex {
 
 	return pageIndex
 }
+
+func GetPagesCount(category models.Category) int {
+	db, err := gorm.Open(viper.GetString(config.GormDialect), viper.GetString(config.GormConnectionString))
+	if err != nil {
+		log.Printf("DB open error: %s\n", err)
+		panic("Failed to connect database")
+	}
+	defer db.Close()
+
+	var count int
+
+	db.Table(config.PageIndexTableName).
+		Where(fmt.Sprintf("%s.category = ?", config.PageIndexTableName), category).
+		Count(&count)
+
+	return count
+}
