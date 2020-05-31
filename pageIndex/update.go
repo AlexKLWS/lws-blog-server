@@ -36,9 +36,16 @@ func Update(category models.Category) {
 		materials = append(materials, intermediateData[i])
 	}
 
-	db.Table(config.ArticleTableName).
-		Select("id, created_at").
-		Find(&intermediateData)
+	if category != models.Misc {
+		db.Table(config.ArticleTableName).
+			Where("category = ?", category).
+			Select("id, created_at").
+			Find(&intermediateData)
+	} else {
+		db.Table(config.ArticleTableName).
+			Select("id, created_at").
+			Find(&intermediateData)
+	}
 	for i := range intermediateData {
 		materials = append(materials, intermediateData[i])
 	}
@@ -50,7 +57,7 @@ func Update(category models.Category) {
 	pageSize := viper.GetInt(config.PageSize)
 	if len(materials) > pageSize {
 		p := 1
-		db.Where(models.PageIndex{Page: p}).Assign(models.PageIndex{Category: category, EndDate: materials[pageSize-1].GetCreatedAt()}).FirstOrCreate(&models.PageIndex{})
+		db.Where(models.PageIndex{Page: p, Category: category}).Assign(models.PageIndex{Category: category, EndDate: materials[pageSize-1].GetCreatedAt()}).FirstOrCreate(&models.PageIndex{})
 		for i := pageSize; i < len(materials); i = i + pageSize {
 			p++
 			var endDateItemIndex int
@@ -59,10 +66,10 @@ func Update(category models.Category) {
 			} else {
 				endDateItemIndex = len(materials) - 1
 			}
-			db.Where(models.PageIndex{Page: p}).Assign(models.PageIndex{Category: category, StartDate: materials[i].GetCreatedAt(), EndDate: materials[endDateItemIndex].GetCreatedAt()}).FirstOrCreate(&models.PageIndex{})
+			db.Where(models.PageIndex{Page: p, Category: category}).Assign(models.PageIndex{Category: category, StartDate: materials[i].GetCreatedAt(), EndDate: materials[endDateItemIndex].GetCreatedAt()}).FirstOrCreate(&models.PageIndex{})
 		}
 	} else {
 		i := len(materials) - 1
-		db.Where(models.PageIndex{Page: 1}).Assign(models.PageIndex{Category: category, EndDate: materials[i].GetCreatedAt()}).FirstOrCreate(&models.PageIndex{})
+		db.Where(models.PageIndex{Page: 1, Category: category}).Assign(models.PageIndex{Category: category, EndDate: materials[i].GetCreatedAt()}).FirstOrCreate(&models.PageIndex{})
 	}
 }
