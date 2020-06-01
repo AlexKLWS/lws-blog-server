@@ -1,11 +1,12 @@
 package articles
 
 import (
+	"log"
+
 	"github.com/AlexKLWS/lws-blog-server/config"
 	"github.com/AlexKLWS/lws-blog-server/models"
 	"github.com/jinzhu/gorm"
 	"github.com/spf13/viper"
-	"log"
 )
 
 func Get(id string) models.ArticleData {
@@ -18,6 +19,6 @@ func Get(id string) models.ArticleData {
 
 	var article models.ArticleData
 
-	db.First(&article, "reference_id = ?", id)
+	db.Table(config.ArticleTableName).First(&article, "reference_id = ?", id)
 	return article
 }
