@@ -22,7 +22,7 @@ func UpdateOrCreatePage(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError)
 	}
 
-	if pageData.ReferenceId != "" {
+	if pageData.ReferenceId == "" {
 		u := uuid.Must(uuid.NewV4())
 		pageData.ReferenceId = u.String()
 	}

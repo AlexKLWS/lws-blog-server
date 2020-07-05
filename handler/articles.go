@@ -22,7 +22,7 @@ func UpdateOrCreateArticle(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError)
 	}
 
-	if articleData.ReferenceId != "" {
+	if articleData.ReferenceId == "" {
 		u := uuid.Must(uuid.NewV4())
 		articleData.ReferenceId = u.String()
 	}
