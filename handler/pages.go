@@ -34,3 +34,11 @@ func NewPage(c echo.Context) error {
 
 	return c.String(http.StatusOK, "OK")
 }
+
+func GetPage(c echo.Context) error {
+	id := c.QueryParam("id")
+
+	article := pages.Get(id)
+
+	return c.JSON(http.StatusOK, article)
+}

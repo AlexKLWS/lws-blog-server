@@ -12,6 +12,7 @@ func RegisterHandlers(serverRouter *router.Router) {
 	serverRouter.Articles.GET("", GetArticle)
 
 	serverRouter.Pages.PUT("", NewPage, customMiddleware.CookieCheck)
+	serverRouter.Pages.GET("", GetPage)
 
 	serverRouter.Materials.GET("", GetMaterials)
 
