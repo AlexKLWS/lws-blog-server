@@ -12,7 +12,7 @@ import (
 	uuid "github.com/satori/go.uuid"
 )
 
-func NewPage(c echo.Context) error {
+func UpdateOrCreatePage(c echo.Context) error {
 	pageData := models.PageData{}
 
 	defer c.Request().Body.Close()
@@ -22,8 +22,10 @@ func NewPage(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError)
 	}
 
-	u := uuid.Must(uuid.NewV4())
-	pageData.ReferenceId = u.String()
+	if pageData.ReferenceId != "" {
+		u := uuid.Must(uuid.NewV4())
+		pageData.ReferenceId = u.String()
+	}
 	go func() {
 		pages.UpdateOrCreate(&pageData)
 		if pageData.Category != models.Misc {

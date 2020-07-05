@@ -18,10 +18,15 @@ func UpdateOrCreate(article *models.ArticleData) {
 	}
 	defer db.Close()
 
-	// Migrate the schema
 	db.AutoMigrate(&models.IconData{})
 	db.AutoMigrate(&models.ArticleData{})
 
-	// Create
-	db.Table(config.ArticleTableName).Create(article)
+	var a models.ArticleData
+	if err := db.Table(config.ArticleTableName).Where("reference_id = ?", article.ReferenceId).First(&a).Error; err != nil {
+		if gorm.IsRecordNotFoundError(err) {
+			db.Table(config.ArticleTableName).Create(article)
+		}
+	} else {
+		db.Table(config.ArticleTableName).Where("reference_id = ?", article.ReferenceId).Update(article)
+	}
 }

@@ -12,7 +12,7 @@ import (
 	uuid "github.com/satori/go.uuid"
 )
 
-func NewArticle(c echo.Context) error {
+func UpdateOrCreateArticle(c echo.Context) error {
 	articleData := models.ArticleData{}
 
 	defer c.Request().Body.Close()
@@ -22,8 +22,10 @@ func NewArticle(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError)
 	}
 
-	u := uuid.Must(uuid.NewV4())
-	articleData.ReferenceId = u.String()
+	if articleData.ReferenceId != "" {
+		u := uuid.Must(uuid.NewV4())
+		articleData.ReferenceId = u.String()
+	}
 	go func() {
 		articles.UpdateOrCreate(&articleData)
 		if articleData.Category != models.Misc {

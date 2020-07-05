@@ -17,10 +17,15 @@ func UpdateOrCreate(page *models.PageData) {
 	}
 	defer db.Close()
 
-	// Migrate the schema
 	db.AutoMigrate(&models.IconData{})
 	db.AutoMigrate(&models.PageData{})
 
-	// Create
-	db.Table(config.PagesTableName).Create(page)
+	var p models.PageData
+	if err := db.Table(config.PagesTableName).Where("reference_id = ?", page.ReferenceId).First(&p).Error; err != nil {
+		if gorm.IsRecordNotFoundError(err) {
+			db.Table(config.PagesTableName).Create(page)
+		}
+	} else {
+		db.Table(config.PagesTableName).Where("reference_id = ?", page.ReferenceId).Update(page)
+	}
 }

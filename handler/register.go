@@ -8,10 +8,10 @@ import (
 func RegisterHandlers(serverRouter *router.Router) {
 	serverRouter.Auth.POST("/login", Login)
 
-	serverRouter.Articles.PUT("", NewArticle, customMiddleware.CookieCheck)
+	serverRouter.Articles.PUT("", UpdateOrCreateArticle, customMiddleware.CookieCheck)
 	serverRouter.Articles.GET("", GetArticle)
 
-	serverRouter.Pages.PUT("", NewPage, customMiddleware.CookieCheck)
+	serverRouter.Pages.PUT("", UpdateOrCreatePage, customMiddleware.CookieCheck)
 	serverRouter.Pages.GET("", GetPage)
 
 	serverRouter.Materials.GET("", GetMaterials)
