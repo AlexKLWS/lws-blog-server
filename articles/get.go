@@ -18,7 +18,12 @@ func Get(id string) models.ArticleData {
 	defer db.Close()
 
 	var article models.ArticleData
-
 	db.Table(config.ArticleTableName).First(&article, "reference_id = ?", id)
+
+	var icon models.IconData
+	db.Table(config.IconTableName).First(&icon, "id = ?", article.IconRefer)
+
+	article.Icon = icon
+
 	return article
 }

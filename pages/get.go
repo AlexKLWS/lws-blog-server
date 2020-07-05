@@ -18,7 +18,12 @@ func Get(id string) models.PageData {
 	defer db.Close()
 
 	var page models.PageData
-
 	db.Table(config.PagesTableName).First(&page, "reference_id = ?", id)
+
+	var icon models.IconData
+	db.Table(config.IconTableName).First(&icon, "id = ?", page.IconRefer)
+
+	page.Icon = icon
+
 	return page
 }
