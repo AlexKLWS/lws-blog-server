@@ -27,6 +27,9 @@ func UpdateOrCreate(article *models.ArticleData) {
 			db.Table(config.ArticleTableName).Create(article)
 		}
 	} else {
-		db.Table(config.ArticleTableName).Where("reference_id = ?", article.ReferenceId).Update(article)
+		db.Table(config.IconTableName).Where("id = ?", a.IconRefer).Updates(article.Icon)
+		var erasedIconArticle = article
+		erasedIconArticle.Icon = models.IconData{}
+		db.Table(config.ArticleTableName).Where("reference_id = ?", article.ReferenceId).Updates(erasedIconArticle)
 	}
 }

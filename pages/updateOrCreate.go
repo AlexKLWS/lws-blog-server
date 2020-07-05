@@ -26,6 +26,9 @@ func UpdateOrCreate(page *models.PageData) {
 			db.Table(config.PagesTableName).Create(page)
 		}
 	} else {
-		db.Table(config.PagesTableName).Where("reference_id = ?", page.ReferenceId).Update(page)
+		db.Table(config.IconTableName).Where("id = ?", p.IconRefer).Updates(page.Icon)
+		var erasedPageArticle = page
+		erasedPageArticle.Icon = models.IconData{}
+		db.Table(config.PagesTableName).Where("reference_id = ?", page.ReferenceId).Updates(erasedPageArticle)
 	}
 }
