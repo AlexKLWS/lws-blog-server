@@ -10,7 +10,7 @@ import (
 	"github.com/spf13/viper"
 )
 
-func Create(article *models.ArticleData) {
+func UpdateOrCreate(article *models.ArticleData) {
 	db, err := gorm.Open(viper.GetString(config.GormDialect), viper.GetString(config.GormConnectionString))
 	if err != nil {
 		log.Printf("DB open error: %s\n", err)

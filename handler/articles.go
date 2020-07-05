@@ -25,7 +25,7 @@ func NewArticle(c echo.Context) error {
 	u := uuid.Must(uuid.NewV4())
 	articleData.ReferenceId = u.String()
 	go func() {
-		articles.Create(&articleData)
+		articles.UpdateOrCreate(&articleData)
 		if articleData.Category != models.Misc {
 			pageindex.Update(models.Misc)
 		}

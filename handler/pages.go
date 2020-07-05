@@ -25,7 +25,7 @@ func NewPage(c echo.Context) error {
 	u := uuid.Must(uuid.NewV4())
 	pageData.ReferenceId = u.String()
 	go func() {
-		pages.Create(&pageData)
+		pages.UpdateOrCreate(&pageData)
 		if pageData.Category != models.Misc {
 			pageindex.Update(models.Misc)
 		}
