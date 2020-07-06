@@ -2,18 +2,19 @@ package auth
 
 import (
 	"fmt"
-	"github.com/AlexKLWS/lws-blog-server/config"
-	"github.com/prologic/bitcask"
-	"github.com/spf13/viper"
 	"log"
 	"sync"
 	"time"
+
+	"github.com/AlexKLWS/lws-blog-server/config"
+	"github.com/prologic/bitcask"
+	"github.com/spf13/viper"
 )
 
 var (
-	activeTokens map[string]time.Time
-	tokenDB      *bitcask.Bitcask
-	mutex        sync.Mutex
+	activeTokens  map[string]time.Time
+	tokenDB       *bitcask.Bitcask
+	mutex         sync.Mutex
 	tokenLifetime time.Duration
 )
 
@@ -29,6 +30,7 @@ func InitializeTokenStorage() {
 	tokenLifetime = time.Duration(viper.GetInt(config.TokenLifetime)) * time.Hour
 
 	now := time.Now()
+	var valuesToDelete [][]byte
 	for v := range values {
 		t, err := tokenDB.Get(v)
 		if err != nil {
@@ -39,7 +41,7 @@ func InitializeTokenStorage() {
 			continue
 		}
 		if parsedTime.Before(now) {
-			tokenDB.Delete(v)
+			valuesToDelete = append(valuesToDelete, v)
 		} else {
 			go func() {
 				go expirationJob(v, now, parsedTime)
@@ -48,6 +50,9 @@ func InitializeTokenStorage() {
 				mutex.Unlock()
 			}()
 		}
+	}
+	for i := range valuesToDelete {
+		tokenDB.Delete(valuesToDelete[i])
 	}
 }
 
@@ -90,6 +95,7 @@ func expirationJob(key []byte, now time.Time, expirationTimestamp time.Time) {
 
 	sk := string(key)
 	if _, ok := activeTokens[sk]; ok {
+		log.Printf("TOKEN %s had expired", sk)
 		mutex.Lock()
 		delete(activeTokens, sk)
 		mutex.Unlock()
