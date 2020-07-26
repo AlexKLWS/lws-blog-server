@@ -28,8 +28,8 @@ func UpdateOrCreate(article *models.ArticleData) {
 		}
 	} else {
 		db.Table(config.IconTableName).Where("id = ?", a.IconRefer).Updates(article.Icon)
-		var erasedIconArticle = article
-		erasedIconArticle.Icon = models.IconData{}
-		db.Table(config.ArticleTableName).Where("reference_id = ?", article.ReferenceId).Updates(erasedIconArticle)
+		var articleWithoutIcon = article
+		articleWithoutIcon.Icon = models.IconData{}
+		db.Table(config.ArticleTableName).Where("reference_id = ?", article.ReferenceId).Updates(articleWithoutIcon)
 	}
 }
