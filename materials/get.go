@@ -18,6 +18,11 @@ func GetMaterialsPageForCategory(page models.PageIndex, category models.Category
 	}
 	defer db.Close()
 
+	db.AutoMigrate(&models.IconData{})
+	db.AutoMigrate(&models.PageData{})
+	db.AutoMigrate(&models.ArticleData{})
+	db.AutoMigrate(&models.GuideData{})
+
 	var materials []models.MaterialRecord
 	var intermediateData []models.JoinedArticlePage
 	if page.Page == 1 {

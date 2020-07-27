@@ -17,6 +17,9 @@ func Get(id string) models.PageData {
 	}
 	defer db.Close()
 
+	db.AutoMigrate(&models.IconData{})
+	db.AutoMigrate(&models.PageData{})
+
 	var page models.PageData
 	db.Table(config.PagesTableName).First(&page, "reference_id = ?", id)
 

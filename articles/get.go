@@ -17,6 +17,9 @@ func Get(id string) models.ArticleData {
 	}
 	defer db.Close()
 
+	db.AutoMigrate(&models.IconData{})
+	db.AutoMigrate(&models.ArticleData{})
+
 	var article models.ArticleData
 	db.Table(config.ArticleTableName).First(&article, "reference_id = ?", id)
 
