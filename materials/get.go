@@ -93,5 +93,23 @@ func GetMaterialsPageForCategory(page models.PageIndex, category models.Category
 		materials = append(materials, article)
 	}
 
+	if page.Page == 1 {
+		db.Table(config.GuidesTabelName).
+			Where(fmt.Sprintf("%s.created_at >= ?", config.GuidesTabelName), page.EndDate).
+			Select("*").
+			Joins(fmt.Sprintf("JOIN %s ON %s.icon_refer = %s.id", config.IconTableName, config.GuidesTabelName, config.IconTableName)).
+			Find(&intermediateData)
+	} else {
+		db.Table(config.GuidesTabelName).
+			Where(fmt.Sprintf("%s.created_at <= ? AND %s.created_at >= ?", config.GuidesTabelName, config.GuidesTabelName), page.StartDate, page.EndDate).
+			Select("*").
+			Joins(fmt.Sprintf("JOIN %s ON %s.icon_refer = %s.id", config.IconTableName, config.GuidesTabelName, config.IconTableName)).
+			Find(&intermediateData)
+	}
+	for i := range intermediateData {
+		article := models.CreateArticleDataFromJoinedRecord(intermediateData[i])
+		materials = append(materials, article)
+	}
+
 	return materials
 }

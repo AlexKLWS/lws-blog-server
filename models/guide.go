@@ -27,3 +27,12 @@ func (gd GuideData) GetID() uint {
 func (gd GuideData) GetCreatedAt() time.Time {
 	return gd.CreatedAt
 }
+
+func CreateGuideDataFromJoinedRecord(r JoinedArticlePage) GuideData {
+	return GuideData{
+		Model: Model{
+			CreatedAt: r.CreatedAt,
+		},
+		MaterialData: CreateMaterialDataFromJoinedRecord(r),
+	}
+}
